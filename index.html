@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+    <title>Document</title>
+</head>
+
+<link rel="stylesheet" href="./public.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Swiper/5.4.5/js/swiper.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Swiper/5.4.5/css/swiper.css">
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/vue"></script>
+
+<body>
+    <div id="app" class="container">
+        <h2>导航栏</h2>
+        <div class="container-a">
+            <a v-for="(item, index) in dataList" :href="item">
+                {{index}}
+            </a>
+        </div>
+    </div>
+</body>
+
+<script>
+    const { createApp } = Vue
+    const app = createApp({
+        data() {
+            return {
+                dataList: {
+                    "1、登录页面": "/01登录界面/index.html",
+                    "2、轮播图": "/02轮播图/index.html",
+                    "3、弹框bootstrap": "/03弹框bootstrap/index.html"
+                }
+            }
+        },
+        methods: {
+
+        },
+    })
+    app.mount("#app")
+</script>
+
+<style>
+    body {
+        display: flex;
+        justify-content: left;
+        position: relative;
+        width: 100%;
+    }
+
+    .container {
+        position: relative;
+        text-align: left;
+        margin: 20px;
+    }
+
+    h2 {
+        margin-bottom: 10px;
+    }
+
+    .container-a a {
+        display: block;
+    }
+</style>
+
+</html>
