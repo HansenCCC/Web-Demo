@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="../public.css">
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
+</head>
+
+<body>
+    <div class="container-content pr">
+        <div class="url-method">
+            <span>method：</span>
+            <select>
+                <option value="GET">GET</option>
+                <option value="POST">POST</option>
+            </select>
+        </div>
+        <div class="url-view">
+            <span>URL：</span>
+            <input id="input-url" type="text" value="https://api.thecatapi.com/v1/images/search">
+        </div>
+        <div class="url-header">
+            <span>Header：</span>
+            <input id="input-header" type="text">
+        </div>
+        <div class="url-parameters">
+            <span>Parameters：</span>
+            <input id="input-parameters" type="text">
+        </div>
+        <button onclick="submit()" class="url-submit pr" type="submit">提交</button>
+        <div id="request-result">结果：</div>
+    </div>
+</body>
+
+<script scope>
+    function submit () {
+        let url = document.getElementById("input-url").value
+        let header = document.getElementById("input-header").value
+        let parameters = document.getElementById("input-parameters").value
+        console.log(url)
+        console.log(header)
+        console.log(parameters)
+        $.ajax({
+            type: "GET",
+            url: url,
+            headers: {},
+            data: {},
+            dataType: "json",
+            success: function (response) {
+                console.log(response)
+                document.getElementById("request-result").innerHTML = JSON.stringify(response)
+            }
+        });
+    }
+</script>
+
+<style>
+
+body {
+    display: flex;
+}
+
+.container-content {
+    margin: 20px;
+    width: 100%;
+}
+
+.url-method {
+    margin-bottom: 10px;
+}
+
+.url-view {
+    margin-bottom: 10px;
+}
+
+.url-header {
+    margin-bottom: 10px;
+}
+
+.url-parameters {
+    margin-bottom: 10px;
+}
+
+.url-submit {
+    width: 100%;
+}
+
+#request-result {
+    margin: 20px 0px;
+    padding: 10px;
+    width: 80%;
+    background-color: gray;
+    word-wrap: break-word;
+}
+
+</style>
+
+</html>
