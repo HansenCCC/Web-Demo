@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="../public.css">
+    <script src="https://cdn.jsdelivr.net/npm/vue"></script>
+</head>
+
+<body>
+    <div id="app" class="container-box pr">
+        <div class="game-content pr">
+            <div class="card-cell pa" v-for="(item, index) in cards" :key="index">
+                {{item}}
+            </div>
+        </div>
+    </div>
+</body>
+
+<script>
+    const { createApp } = Vue
+    const app = createApp({
+        data() {
+            return {
+                cards:["1","2","3","4","5","6","7","8","0"]
+            }
+        },
+    })
+    app.mount("#app")
+</script>
+
+<style scoped>
+    body {
+        width: 100vw;
+        height: 100vh;
+    }
+
+    .container-box {
+        display: flex;
+        align-items: center;
+        position: relative;
+        width: 100%;
+        height: 100%;
+        flex-direction: column;
+    }
+
+    .game-content {
+        width: 70vw;
+        height: 70vw;
+        background-color: white;
+        margin-top: 50px;
+        border-radius: 15px;
+        padding: 20px;
+    }
+
+    .card-cell {
+        width: 33%;
+        height: 33%;
+    }
+
+</style>
+
+</html>
