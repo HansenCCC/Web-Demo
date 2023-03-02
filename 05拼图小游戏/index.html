@@ -6,15 +6,19 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
     <title>Document</title>
-    <link rel="stylesheet" href="../public.css">
     <script src="https://cdn.jsdelivr.net/npm/vue"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
+    <link rel="stylesheet" href="../public.css">
 </head>
 
 <body>
-    <div id="app" class="container-box pr">
-        <div class="game-content pr">
-            <div class="card-cell pa" v-for="(item, index) in cards" :key="index">
-                {{item}}
+    <div id="app" class="container pr">
+        <div class="container-box pr">
+            <div class="game-content pr">
+                <div :id="'card-cell' + index" class="card-cell pa" v-for="(item, index) in cards" :key="index"
+                    @click="cellSelctedAction($event,index)">
+                    <p class="card-cell-number pr">{{item}}</p>
+                </div>
             </div>
         </div>
     </div>
@@ -25,9 +29,73 @@
     const app = createApp({
         data() {
             return {
-                cards:["1","2","3","4","5","6","7","8","0"]
+                cards: ["1", "2", "3", "4", "5", "6", "7", "8", ""]
             }
         },
+        mounted() {
+            this.updateCellFrame()
+        },
+        methods: {
+            updateCellFrame() {
+                var cells = document.getElementsByClassName("card-cell")
+                for (let index = 0; index < cells.length; index++) {
+                    const element = cells[index];
+                    let r = Math.random() * 255;
+                    let g = Math.random() * 255;
+                    let b = Math.random() * 255;
+                    var width = 1 / 3 * 100;
+                    element.style.left = width * parseInt((index % 3)) + "%"
+                    element.style.top = width * parseInt((index / 3)) + "%"
+                    element.style.backgroundColor = "rgb(" + r + "," + g + "," + b + ")"
+                    element.style.backgroundColor = "#efefef"
+                    element.style.oldTop = element.style.top
+                    element.style.oldLeft = element.style.left
+                    // element.style.backgroundColor = "#67C23A"
+                }
+                this.checkCells()
+            },
+            cellSelctedAction(cell, index) {
+                var specialCell = document.getElementById("card-cell8")
+                if (cell.target != specialCell) {
+                    var cellLeft = cell.target.style.left;
+                    var cellTop = cell.target.style.top;
+                    var specialLeft = specialCell.style.left;
+                    var specialTop = specialCell.style.top;
+
+                    var canMove = true//是否允许移动
+                    var thresholdWidth = 1 / 3 * (3 - 1) * 100;
+                    if (Math.abs((parseFloat(specialTop) - parseFloat(cellTop))) >= thresholdWidth) {
+                        canMove = false
+                    }
+
+                    if (Math.abs((parseFloat(specialLeft) - parseFloat(cellLeft))) >= thresholdWidth) {
+                        canMove = false
+                    }
+
+                    console.log(specialCell.style.oldTop)
+                    if ((cellLeft == specialLeft || cellTop == specialTop) && canMove) {
+                        cell.target.style.left = specialCell.style.left;
+                        cell.target.style.top = specialCell.style.top;
+                        specialCell.style.left = cellLeft;
+                        specialCell.style.top = cellTop;
+                        this.checkCells()
+                    }
+                }
+            },
+            checkCells() {
+                var cells = document.getElementsByClassName("card-cell")
+                for (let index = 0; index < cells.length; index++) {
+                    const element = cells[index];
+                    if (element.style.oldTop == element.style.top && element.style.oldLeft == element.style.left) {
+                        element.style.backgroundColor = "#67C23A"
+                    } else {
+                        element.style.backgroundColor = "#efefef"
+                    }
+                }
+                var specialCell = document.getElementById("card-cell8")
+                specialCell.style.backgroundColor = "#dddddd00"
+            }
+        }
     })
     app.mount("#app")
 </script>
@@ -36,29 +104,47 @@
     body {
         width: 100vw;
         height: 100vh;
+        background-color: white;
     }
 
-    .container-box {
+    .container {
         display: flex;
         align-items: center;
         position: relative;
         width: 100%;
         height: 100%;
         flex-direction: column;
+        background-color: white;
+    }
+
+    .container-box {
+        border-radius: 15px;
+        margin-top: 50px;
+        background-color: #ddd;
+        padding: 20px;
+        width: 70vw;
+        height: 70vw;
     }
 
     .game-content {
-        width: 70vw;
-        height: 70vw;
-        background-color: white;
-        margin-top: 50px;
-        border-radius: 15px;
-        padding: 20px;
+        width: 100%;
+        height: 100%;
     }
 
     .card-cell {
-        width: 33%;
-        height: 33%;
+        width: 33.33%;
+        height: 33.33%;
+        text-align: center;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.2s;
+    }
+
+    .card-cell-number {
+        font-size: 30px;
+        background-color: transparent;
+        pointer-events: none;
     }
 
 </style>
