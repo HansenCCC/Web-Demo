@@ -17,14 +17,34 @@
             <div class="game-content pr">
                 <div :id="'card-cell' + index" class="card-cell pa" v-for="(item, index) in cards" :key="index"
                     @click="cellSelctedAction($event,index)">
-                    <p class="card-cell-number pr">{{item}}</p>
+                    <div class="card-cell-content pr">
+                        <p class="card-cell-number pr">{{item}}</p>
+                    </div>
                 </div>
+            </div>
+        </div>
+        <div class="container-tools pr">
+            <div class="tools-item-reset">
+                新的游戏
+            </div>
+            <div class="tools-item-reset">
+                分享给朋友
+            </div>
+            <div class="tools-item-reset">
+                排行榜
+            </div>
+            <div class="tools-item-reset">
+                时间：32s
+            </div>
+            <div class="tools-item-reset">
+                移动：100次
             </div>
         </div>
     </div>
 </body>
 
 <script>
+    const kRowCount = 3;
     const { createApp } = Vue
     const app = createApp({
         data() {
@@ -34,6 +54,10 @@
         },
         mounted() {
             this.updateCellFrame()
+            this.setNewGame()
+            document.querySelector('div').addEventListener('click', function (event) {
+                event.preventDefault();
+            });
         },
         methods: {
             updateCellFrame() {
@@ -43,16 +67,14 @@
                     let r = Math.random() * 255;
                     let g = Math.random() * 255;
                     let b = Math.random() * 255;
-                    var width = 1 / 3 * 100;
-                    element.style.left = width * parseInt((index % 3)) + "%"
-                    element.style.top = width * parseInt((index / 3)) + "%"
-                    element.style.backgroundColor = "rgb(" + r + "," + g + "," + b + ")"
-                    element.style.backgroundColor = "#efefef"
+                    var width = 1 / kRowCount * 100;
+                    element.style.left = width * parseInt((index % kRowCount)) + "%"
+                    element.style.top = width * parseInt((index / kRowCount)) + "%"
+                    // element.style.backgroundColor = "rgb(" + r + "," + g + "," + b + ")"
                     element.style.oldTop = element.style.top
                     element.style.oldLeft = element.style.left
-                    // element.style.backgroundColor = "#67C23A"
                 }
-                this.checkCells()
+                this.checkCells(true)
             },
             cellSelctedAction(cell, index) {
                 var specialCell = document.getElementById("card-cell8")
@@ -61,39 +83,65 @@
                     var cellTop = cell.target.style.top;
                     var specialLeft = specialCell.style.left;
                     var specialTop = specialCell.style.top;
-
+                    // 只有block 相邻才允许与之替换位置
                     var canMove = true//是否允许移动
-                    var thresholdWidth = 1 / 3 * (3 - 1) * 100;
+                    var thresholdWidth = 1 / kRowCount * (kRowCount - 1) * 100;
+                    // 判断垂直方向是否允许跟block替换位置
                     if (Math.abs((parseFloat(specialTop) - parseFloat(cellTop))) >= thresholdWidth) {
                         canMove = false
                     }
-
+                    // 判断水平方向是否允许跟block替换位置
                     if (Math.abs((parseFloat(specialLeft) - parseFloat(cellLeft))) >= thresholdWidth) {
                         canMove = false
                     }
-
-                    console.log(specialCell.style.oldTop)
+                    // 判断点击cell与block是否在同一水平方向或者同一垂直方向，否者不允许替换
                     if ((cellLeft == specialLeft || cellTop == specialTop) && canMove) {
                         cell.target.style.left = specialCell.style.left;
                         cell.target.style.top = specialCell.style.top;
                         specialCell.style.left = cellLeft;
                         specialCell.style.top = cellTop;
-                        this.checkCells()
+                        this.checkCells(false)
                     }
                 }
             },
-            checkCells() {
+            checkCells(isMounted) {
                 var cells = document.getElementsByClassName("card-cell")
+                var isMatchAll = true;
                 for (let index = 0; index < cells.length; index++) {
                     const element = cells[index];
                     if (element.style.oldTop == element.style.top && element.style.oldLeft == element.style.left) {
-                        element.style.backgroundColor = "#67C23A"
+                        // 匹配到
+                        element.getElementsByClassName("card-cell-content")[0].style.border = "4px solid var(--game-selected-color)"
                     } else {
-                        element.style.backgroundColor = "#efefef"
+                        // 未匹配到
+                        element.getElementsByClassName("card-cell-content")[0].style.border = "4px solid var(--game-unselect-color)"
+                        isMatchAll = false
                     }
                 }
                 var specialCell = document.getElementById("card-cell8")
-                specialCell.style.backgroundColor = "#dddddd00"
+                specialCell.getElementsByClassName("card-cell-content")[0].style.border = "4px solid var(--game-box-color)"
+                specialCell.getElementsByClassName("card-cell-content")[0].style.backgroundColor = "var(--game-box-color)"
+
+                // 所有的都匹配
+                if (isMatchAll && isMounted == false) {
+                    console.log("可以结束游戏了")
+                }
+            },
+            setNewGame() {
+                var cells = document.getElementsByClassName("card-cell")
+                cells = Array.from(cells)
+                var specialCell = cells.pop()
+                cells.sort(function (a, b) {
+                    return Math.random() - 0.5;
+                });
+                cells.push(specialCell)
+                for (let index = 0; index < cells.length; index++) {
+                    const element = cells[index];
+                    var width = 1 / kRowCount * 100;
+                    element.style.left = width * parseInt((index % kRowCount)) + "%"
+                    element.style.top = width * parseInt((index / kRowCount)) + "%"
+                }
+                this.checkCells(true);
             }
         }
     })
@@ -104,7 +152,7 @@
     body {
         width: 100vw;
         height: 100vh;
-        background-color: white;
+        background-color: var(--game-background-color);
     }
 
     .container {
@@ -114,21 +162,34 @@
         width: 100%;
         height: 100%;
         flex-direction: column;
-        background-color: white;
+        background-color: var(--game-background-color);
     }
 
     .container-box {
         border-radius: 15px;
         margin-top: 50px;
-        background-color: #ddd;
+        background-color: var(--game-background-color);
         padding: 20px;
-        width: 70vw;
-        height: 70vw;
+        width: 300px;
+        height: 300px;
+        border: 3px solid #efefef;
+        box-shadow: 0px 0px 20px #efefef;
+    }
+
+    .container-tools {
+        border-radius: 15px;
+        margin-top: 20px;
+        background-color: var(--game-background-color);
+        padding: 20px;
+        width: 300px;
+        border: 3px solid #efefef;
+        box-shadow: 0px 0px 20px #efefef;
     }
 
     .game-content {
         width: 100%;
         height: 100%;
+        background-color: var(--game-background-color);
     }
 
     .card-cell {
@@ -139,14 +200,38 @@
         align-items: center;
         justify-content: center;
         transition: all 0.2s;
+        -webkit-user-select: none;
+        user-select: none;
+    }
+
+    .card-cell-content {
+        width: 80%;
+        height: 80%;
+        pointer-events: none;
+        text-align: center;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 4px solid var(--game-unselect-color);
+        border-radius: 5px;
+        background-color: var(--game-cell-color);
+        box-shadow: 3px 3px #efefef;
     }
 
     .card-cell-number {
         font-size: 30px;
         background-color: transparent;
-        pointer-events: none;
     }
 
+    :root {
+        --game-row-number: 3;
+        --game-background-color: #ffffff;
+        --game-selected-color: #007aff;
+        --game-unselect-color: #565656;
+        --game-important-color: #ff0000;
+        --game-box-color: #eeeeee;
+        --game-cell-color: #efefef55;
+    }
 </style>
 
 </html>
