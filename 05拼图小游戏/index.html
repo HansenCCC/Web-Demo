@@ -23,41 +23,52 @@
                 </div>
             </div>
         </div>
+        <div class="container-gameinfo pr">
+            <div class="tools-item tools-item-time pa">
+                <p>时间：{{state.completionTime}}s</p>
+            </div>
+            <div class="tools-item tools-item-moveCount pa">
+                <p>移动：{{state.moveCount}}</p>
+            </div>
+        </div>
         <div class="container-tools pr">
-            <div class="tools-item-reset">
-                新的游戏
-            </div>
-            <div class="tools-item-reset">
-                分享给朋友
-            </div>
-            <div class="tools-item-reset">
-                排行榜
-            </div>
-            <div class="tools-item-reset">
-                时间：32s
-            </div>
-            <div class="tools-item-reset">
-                移动：100次
+            <div class="tools-item tools-item-reset">
+                <p>重新开始</p>
             </div>
         </div>
     </div>
 </body>
 
 <script>
-    const kRowCount = 3;
+
+
+    const kRowCount = 3;// --game-row-number: 3;
     const { createApp } = Vue
     const app = createApp({
         data() {
             return {
-                cards: ["1", "2", "3", "4", "5", "6", "7", "8", ""]
+                cards: ["1", "2", "3", "4", "5", "6", "7", "8", ""],
+                state: {
+                    isRun: false,// 游戏是否开始
+                    startTime: null,// 开始时间
+                    endTime: null,// 结束时间
+                    completionTime: 0,// 耗时
+                    moveCount: 0,// 移动总次数
+                },
+                rowCount: 3,// 一行几个
             }
         },
         mounted() {
             this.updateCellFrame()
             this.setNewGame()
+            // 移除点击默认事件
             document.querySelector('div').addEventListener('click', function (event) {
                 event.preventDefault();
             });
+            // 添加定时器，记录时间
+            const timer = setInterval(() => {
+                this.$data.state.completionTime = parseInt((Date.now() - this.$data.state.startTime) / 1000);
+            }, 1000);
         },
         methods: {
             updateCellFrame() {
@@ -76,6 +87,7 @@
                 }
                 this.checkCells(true)
             },
+            // 选择 | 或者移动cell
             cellSelctedAction(cell, index) {
                 var specialCell = document.getElementById("card-cell8")
                 if (cell.target != specialCell) {
@@ -83,7 +95,7 @@
                     var cellTop = cell.target.style.top;
                     var specialLeft = specialCell.style.left;
                     var specialTop = specialCell.style.top;
-                    // 只有block 相邻才允许与之替换位置
+                    // 只有 block 相邻才允许与之替换位置
                     var canMove = true//是否允许移动
                     var thresholdWidth = 1 / kRowCount * (kRowCount - 1) * 100;
                     // 判断垂直方向是否允许跟block替换位置
@@ -101,9 +113,11 @@
                         specialCell.style.left = cellLeft;
                         specialCell.style.top = cellTop;
                         this.checkCells(false)
+                        this.$data.state.moveCount++
                     }
                 }
             },
+            // 检查所有的cell是否都匹配上
             checkCells(isMounted) {
                 var cells = document.getElementsByClassName("card-cell")
                 var isMatchAll = true;
@@ -111,22 +125,25 @@
                     const element = cells[index];
                     if (element.style.oldTop == element.style.top && element.style.oldLeft == element.style.left) {
                         // 匹配到
-                        element.getElementsByClassName("card-cell-content")[0].style.border = "4px solid var(--game-selected-color)"
+                        element.getElementsByClassName("card-cell-content")[0].style.border = "2px solid var(--game-selected-color)"
                     } else {
                         // 未匹配到
-                        element.getElementsByClassName("card-cell-content")[0].style.border = "4px solid var(--game-unselect-color)"
+                        element.getElementsByClassName("card-cell-content")[0].style.border = "2px solid var(--game-unselect-color)"
                         isMatchAll = false
                     }
                 }
                 var specialCell = document.getElementById("card-cell8")
-                specialCell.getElementsByClassName("card-cell-content")[0].style.border = "4px solid var(--game-box-color)"
+                specialCell.getElementsByClassName("card-cell-content")[0].style.border = "2px solid var(--game-box-color)"
                 specialCell.getElementsByClassName("card-cell-content")[0].style.backgroundColor = "var(--game-box-color)"
 
                 // 所有的都匹配
                 if (isMatchAll && isMounted == false) {
                     console.log("可以结束游戏了")
+                    this.$data.state.isRun = false
+                    this.$data.state.endTime = Date.now()
                 }
             },
+            // 开始新的游戏
             setNewGame() {
                 var cells = document.getElementsByClassName("card-cell")
                 cells = Array.from(cells)
@@ -142,6 +159,14 @@
                     element.style.top = width * parseInt((index / kRowCount)) + "%"
                 }
                 this.checkCells(true);
+                this.$data.state.isRun = true
+                this.$data.state.startTime = Date.now()
+            },
+            setRowNumber(rowCount) {
+                // 设置一行展示几个cells
+                document.querySelector(":root").style.setProperty('--game-row-number', rowCount);
+                this.$data.rowCount = rowCount;
+                this.setNewGame()
             }
         }
     })
@@ -170,20 +195,29 @@
         margin-top: 50px;
         background-color: var(--game-background-color);
         padding: 20px;
-        width: 300px;
-        height: 300px;
+        width: var(--game-width);
+        height: var(--game-width);
         border: 3px solid #efefef;
         box-shadow: 0px 0px 20px #efefef;
     }
 
     .container-tools {
         border-radius: 15px;
-        margin-top: 20px;
+        margin-top: 0px;
         background-color: var(--game-background-color);
-        padding: 20px;
-        width: 300px;
+        padding: 10px 20px;
+        width: var(--game-width);
         border: 3px solid #efefef;
         box-shadow: 0px 0px 20px #efefef;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    .container-gameinfo {
+        margin-top: 20px;
+        width: var(--game-width);
+        height: 40px;
     }
 
     .game-content {
@@ -212,7 +246,6 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        border: 4px solid var(--game-unselect-color);
         border-radius: 5px;
         background-color: var(--game-cell-color);
         box-shadow: 3px 3px #efefef;
@@ -223,14 +256,27 @@
         background-color: transparent;
     }
 
+    .tools-item {
+        font-size: 20px;
+    }
+
+    .tools-item-time {
+        left: 0%;
+    }
+
+    .tools-item-moveCount {
+        right: 0%;
+    }
+
     :root {
-        --game-row-number: 3;
         --game-background-color: #ffffff;
         --game-selected-color: #007aff;
         --game-unselect-color: #565656;
         --game-important-color: #ff0000;
         --game-box-color: #eeeeee;
         --game-cell-color: #efefef55;
+        --game-width: 280px;
+        --game-row-number: 3;
     }
 </style>
 
