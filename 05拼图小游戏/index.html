@@ -39,140 +39,6 @@
     </div>
 </body>
 
-<script>
-
-
-    const kRowCount = 3;// --game-row-number: 3;
-    const { createApp } = Vue
-    const app = createApp({
-        data() {
-            return {
-                cards: ["1", "2", "3", "4", "5", "6", "7", "8", ""],
-                state: {
-                    isRun: false,// 游戏是否开始
-                    startTime: null,// 开始时间
-                    endTime: null,// 结束时间
-                    completionTime: 0,// 耗时
-                    moveCount: 0,// 移动总次数
-                },
-                rowCount: 3,// 一行几个
-            }
-        },
-        mounted() {
-            this.updateCellFrame()
-            this.setNewGame()
-            // 移除点击默认事件
-            document.querySelector('div').addEventListener('click', function (event) {
-                event.preventDefault();
-            });
-            // 添加定时器，记录时间
-            const timer = setInterval(() => {
-                this.$data.state.completionTime = parseInt((Date.now() - this.$data.state.startTime) / 1000);
-            }, 1000);
-        },
-        methods: {
-            updateCellFrame() {
-                var cells = document.getElementsByClassName("card-cell")
-                for (let index = 0; index < cells.length; index++) {
-                    const element = cells[index];
-                    let r = Math.random() * 255;
-                    let g = Math.random() * 255;
-                    let b = Math.random() * 255;
-                    var width = 1 / kRowCount * 100;
-                    element.style.left = width * parseInt((index % kRowCount)) + "%"
-                    element.style.top = width * parseInt((index / kRowCount)) + "%"
-                    // element.style.backgroundColor = "rgb(" + r + "," + g + "," + b + ")"
-                    element.style.oldTop = element.style.top
-                    element.style.oldLeft = element.style.left
-                }
-                this.checkCells(true)
-            },
-            // 选择 | 或者移动cell
-            cellSelctedAction(cell, index) {
-                var specialCell = document.getElementById("card-cell8")
-                if (cell.target != specialCell) {
-                    var cellLeft = cell.target.style.left;
-                    var cellTop = cell.target.style.top;
-                    var specialLeft = specialCell.style.left;
-                    var specialTop = specialCell.style.top;
-                    // 只有 block 相邻才允许与之替换位置
-                    var canMove = true//是否允许移动
-                    var thresholdWidth = 1 / kRowCount * (kRowCount - 1) * 100;
-                    // 判断垂直方向是否允许跟block替换位置
-                    if (Math.abs((parseFloat(specialTop) - parseFloat(cellTop))) >= thresholdWidth) {
-                        canMove = false
-                    }
-                    // 判断水平方向是否允许跟block替换位置
-                    if (Math.abs((parseFloat(specialLeft) - parseFloat(cellLeft))) >= thresholdWidth) {
-                        canMove = false
-                    }
-                    // 判断点击cell与block是否在同一水平方向或者同一垂直方向，否者不允许替换
-                    if ((cellLeft == specialLeft || cellTop == specialTop) && canMove) {
-                        cell.target.style.left = specialCell.style.left;
-                        cell.target.style.top = specialCell.style.top;
-                        specialCell.style.left = cellLeft;
-                        specialCell.style.top = cellTop;
-                        this.checkCells(false)
-                        this.$data.state.moveCount++
-                    }
-                }
-            },
-            // 检查所有的cell是否都匹配上
-            checkCells(isMounted) {
-                var cells = document.getElementsByClassName("card-cell")
-                var isMatchAll = true;
-                for (let index = 0; index < cells.length; index++) {
-                    const element = cells[index];
-                    if (element.style.oldTop == element.style.top && element.style.oldLeft == element.style.left) {
-                        // 匹配到
-                        element.getElementsByClassName("card-cell-content")[0].style.border = "2px solid var(--game-selected-color)"
-                    } else {
-                        // 未匹配到
-                        element.getElementsByClassName("card-cell-content")[0].style.border = "2px solid var(--game-unselect-color)"
-                        isMatchAll = false
-                    }
-                }
-                var specialCell = document.getElementById("card-cell8")
-                specialCell.getElementsByClassName("card-cell-content")[0].style.border = "2px solid var(--game-box-color)"
-                specialCell.getElementsByClassName("card-cell-content")[0].style.backgroundColor = "var(--game-box-color)"
-
-                // 所有的都匹配
-                if (isMatchAll && isMounted == false) {
-                    console.log("可以结束游戏了")
-                    this.$data.state.isRun = false
-                    this.$data.state.endTime = Date.now()
-                }
-            },
-            // 开始新的游戏
-            setNewGame() {
-                var cells = document.getElementsByClassName("card-cell")
-                cells = Array.from(cells)
-                var specialCell = cells.pop()
-                cells.sort(function (a, b) {
-                    return Math.random() - 0.5;
-                });
-                cells.push(specialCell)
-                for (let index = 0; index < cells.length; index++) {
-                    const element = cells[index];
-                    var width = 1 / kRowCount * 100;
-                    element.style.left = width * parseInt((index % kRowCount)) + "%"
-                    element.style.top = width * parseInt((index / kRowCount)) + "%"
-                }
-                this.checkCells(true);
-                this.$data.state.isRun = true
-                this.$data.state.startTime = Date.now()
-            },
-            setRowNumber(rowCount) {
-                // 设置一行展示几个cells
-                document.querySelector(":root").style.setProperty('--game-row-number', rowCount);
-                this.$data.rowCount = rowCount;
-                this.setNewGame()
-            }
-        }
-    })
-    app.mount("#app")
-</script>
-
 <style scoped>
     body {
         width: 100vw;
@@ -227,8 +93,8 @@
     }
 
     .card-cell {
-        width: 33.33%;
-        height: 33.33%;
+        width: calc(100% / var(--game-row-number));
+        height: calc(100% / var(--game-row-number));
         text-align: center;
         display: flex;
         align-items: center;
@@ -278,6 +144,157 @@
         --game-width: 280px;
         --game-row-number: 3;
     }
+
 </style>
+
+<script>
+    const rootStyles = getComputedStyle(document.documentElement);
+    const gameRowNumber = rootStyles.getPropertyValue('--game-row-number');
+    const kRowCount = parseInt(gameRowNumber);
+    const { createApp } = Vue
+    const app = createApp({
+        data() {
+            return {
+                cards: [],
+                state: {
+                    isRun: false,// 游戏是否开始
+                    startTime: null,// 开始时间
+                    endTime: null,// 结束时间
+                    completionTime: 0,// 耗时
+                    moveCount: 0,// 移动总次数
+                },
+                rowCount: kRowCount,// 一行几个
+                totalRows: kRowCount * kRowCount,// 共计多少
+            }
+        },
+        mounted() {
+            this.setupCards()
+            // 移除点击默认事件
+            document.querySelector('div').addEventListener('click', function (event) {
+                event.preventDefault();
+            });
+            // 添加定时器，记录时间
+            const timer = setInterval(() => {
+                this.$data.state.completionTime = parseInt((Date.now() - this.$data.state.startTime) / 1000);
+            }, 1000);
+        },
+        methods: {
+            setupCards() {
+                this.$data.cards.splice(0, this.$data.cards.length)
+                const allElements = this.$data.totalRows;
+                for (let index = 0; index < allElements - 1; index++) {
+                    this.$data.cards.push(index + 1)
+                }
+                this.$data.cards.push("")
+                this.updateCellFrame()
+                this.$nextTick(function(){
+                    this.updateCellFrame()
+                    this.setNewGame()
+                })
+            },
+            updateCellFrame() {
+                var cells = document.getElementsByClassName("card-cell")
+                for (let index = 0; index < cells.length; index++) {
+                    const element = cells[index];
+                    let r = Math.random() * 255;
+                    let g = Math.random() * 255;
+                    let b = Math.random() * 255;
+                    var width = 1 / kRowCount * 100;
+                    // element.style.width = 
+                    // element.style.height = 
+                    element.style.left = width * parseInt((index % kRowCount)) + "%"
+                    element.style.top = width * parseInt((index / kRowCount)) + "%"
+                    // element.style.backgroundColor = "rgb(" + r + "," + g + "," + b + ")"
+                    element.style.oldTop = element.style.top
+                    element.style.oldLeft = element.style.left
+                }
+                this.checkCells(true)
+            },
+            // 选择 | 或者移动cell
+            cellSelctedAction(cell, index) {
+                var specialCell = document.getElementById("card-cell" + (this.$data.totalRows - 1))
+                if (cell.target != specialCell) {
+                    var cellLeft = cell.target.style.left;
+                    var cellTop = cell.target.style.top;
+                    var specialLeft = specialCell.style.left;
+                    var specialTop = specialCell.style.top;
+                    // 只有 block 相邻才允许与之替换位置
+                    var canMove = true//是否允许移动
+                    var thresholdWidth = 1 / kRowCount * (kRowCount - 1) * 100;
+                    // 判断垂直方向是否允许跟block替换位置
+                    if (Math.abs((parseFloat(specialTop) - parseFloat(cellTop))) >= thresholdWidth) {
+                        canMove = false
+                    }
+                    // 判断水平方向是否允许跟block替换位置
+                    if (Math.abs((parseFloat(specialLeft) - parseFloat(cellLeft))) >= thresholdWidth) {
+                        canMove = false
+                    }
+                    // 判断点击cell与block是否在同一水平方向或者同一垂直方向，否者不允许替换
+                    if ((cellLeft == specialLeft || cellTop == specialTop) && canMove) {
+                        cell.target.style.left = specialCell.style.left;
+                        cell.target.style.top = specialCell.style.top;
+                        specialCell.style.left = cellLeft;
+                        specialCell.style.top = cellTop;
+                        this.checkCells(false)
+                        this.$data.state.moveCount++
+                    }
+                }
+            },
+            // 检查所有的cell是否都匹配上
+            checkCells(isMounted) {
+                var cells = document.getElementsByClassName("card-cell")
+                var isMatchAll = true;
+                for (let index = 0; index < cells.length; index++) {
+                    const element = cells[index];
+                    if (element.style.oldTop == element.style.top && element.style.oldLeft == element.style.left) {
+                        // 匹配到
+                        element.getElementsByClassName("card-cell-content")[0].style.border = "2px solid var(--game-selected-color)"
+                    } else {
+                        // 未匹配到
+                        element.getElementsByClassName("card-cell-content")[0].style.border = "2px solid var(--game-unselect-color)"
+                        isMatchAll = false
+                    }
+                }
+                var specialCell = document.getElementById("card-cell" + (this.$data.totalRows - 1))
+                if (specialCell) {
+                    specialCell.getElementsByClassName("card-cell-content")[0].style.border = "2px solid var(--game-box-color)"
+                    specialCell.getElementsByClassName("card-cell-content")[0].style.backgroundColor = "var(--game-box-color)"
+                }
+                // 所有的都匹配
+                if (isMatchAll && isMounted == false) {
+                    console.log("可以结束游戏了")
+                    this.$data.state.isRun = false
+                    this.$data.state.endTime = Date.now()
+                }
+            },
+            // 开始新的游戏
+            setNewGame() {
+                var cells = document.getElementsByClassName("card-cell")
+                cells = Array.from(cells)
+                var specialCell = cells.pop()
+                cells.sort(function (a, b) {
+                    return Math.random() - 0.5;
+                });
+                cells.push(specialCell)
+                for (let index = 0; index < cells.length; index++) {
+                    const element = cells[index];
+                    var width = 1 / kRowCount * 100;
+                    element.style.left = width * parseInt((index % kRowCount)) + "%"
+                    element.style.top = width * parseInt((index / kRowCount)) + "%"
+                }
+                this.checkCells(true);
+                this.$data.state.isRun = true
+                this.$data.state.startTime = Date.now()
+            },
+            setRowNumber(rowCount) {
+                // 设置一行展示几个cells
+                document.querySelector(":root").style.setProperty('--game-row-number', rowCount);
+                this.$data.rowCount = rowCount;
+                this.setNewGame()
+            }
+        }
+    })
+    app.mount("#app")
+</script>
 
 </html>

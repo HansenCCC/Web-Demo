@@ -1,0 +1,3 @@
+function haha() {
+    console.log("🚀🚀🚀🚀🚀🚀")
+}

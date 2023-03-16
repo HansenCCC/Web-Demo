@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale1.0">
+    <title>ChatGPT-Demo</title>
+    <script src="https://cdn.jsdelivr.net/npm/vue"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
+    <link rel="stylesheet" href="../public.css">
+</head>
+
+<body>
+    <div class="container-content pr">
+        <div class="container-main-view pa">
+
+        </div>
+        <div class="container-input-view pa">
+            <span class="yp-line pa"></span>
+            <div class="container-input-box">
+                <input type="text">
+
+            </div>
+        </div>
+    </div>
+</body>
+
+<style scoped>
+    :root {
+        --chatgpt-content-backgroundcolor: #343541;
+        --chatgpt-input-backgroundcolor: #3e3f4b;
+        --chatgpt-line-backgroundcolor: #8d8d8d;
+        --chatgpt-input-height: 100px;
+    }
+
+    .container-content {
+        width: 100vw;
+        height: 100vh;
+        background-color: var(--chatgpt-content-backgroundcolor);
+    }
+
+    .container-main-view {
+        width: 100%;
+        height: calc(100% - var(--chatgpt-input-height));
+    }
+
+    .container-input-view {
+        width: 100%;
+        height: var(--chatgpt-input-height);
+        background-color: var(--chatgpt-content-backgroundcolor);
+        bottom: 0%;
+    }
+
+    .container-input-box {
+        background-color: blue;
+        margin: 10px;
+    }
+
+    .yp-line {
+        width: 100%;
+        height: 1px;
+        background-color: var(--chatgpt-line-backgroundcolor);
+    }
+
+</style>
+
+</html>
