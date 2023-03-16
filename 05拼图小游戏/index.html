@@ -31,7 +31,7 @@
                 <p>移动：{{state.moveCount}}</p>
             </div>
         </div>
-        <div class="container-tools pr">
+        <div class="container-tools pr" @click="setNewGame()">
             <div class="tools-item tools-item-reset">
                 <p>重新开始</p>
             </div>
@@ -65,6 +65,8 @@
         height: var(--game-width);
         border: 3px solid #efefef;
         box-shadow: 0px 0px 20px #efefef;
+        outline: none;
+        -webkit-tap-highlight-color: transparent;
     }
 
     .container-tools {
@@ -124,6 +126,8 @@
 
     .tools-item {
         font-size: 20px;
+        -webkit-user-select: none;
+        user-select: none;
     }
 
     .tools-item-time {
@@ -144,10 +148,16 @@
         --game-width: 280px;
         --game-row-number: 3;
     }
-
 </style>
 
 <script>
+    // const yptools_uniqueIdentification = 'yptools_uniqueIdentification'
+    // if (!localStorage.getItem(yptools_uniqueIdentification)) {
+    //     localStorage.setItem(yptools_uniqueIdentification, Math.random().toString(36).substring(2));
+    // }
+
+    console.log(Math.random().toString(36).substring(2))
+
     const rootStyles = getComputedStyle(document.documentElement);
     const gameRowNumber = rootStyles.getPropertyValue('--game-row-number');
     const kRowCount = parseInt(gameRowNumber);
@@ -175,8 +185,14 @@
             });
             // 添加定时器，记录时间
             const timer = setInterval(() => {
-                this.$data.state.completionTime = parseInt((Date.now() - this.$data.state.startTime) / 1000);
-            }, 1000);
+                if (this.$data.state.isRun) {
+                    // 游戏进行中...
+                    this.$data.state.completionTime = parseInt((Date.now() - this.$data.state.startTime) / 1000);
+                } else {
+                    // 游戏未开始 或者在 结算中
+                    this.$data.state.completionTime = parseInt((this.$data.state.endTime - this.$data.state.startTime) / 1000);
+                }
+            }, 200);
         },
         methods: {
             setupCards() {
@@ -187,7 +203,7 @@
                 }
                 this.$data.cards.push("")
                 this.updateCellFrame()
-                this.$nextTick(function(){
+                this.$nextTick(function () {
                     this.updateCellFrame()
                     this.setNewGame()
                 })
@@ -262,9 +278,7 @@
                 }
                 // 所有的都匹配
                 if (isMatchAll && isMounted == false) {
-                    console.log("可以结束游戏了")
-                    this.$data.state.isRun = false
-                    this.$data.state.endTime = Date.now()
+                    this.completeGame()
                 }
             },
             // 开始新的游戏
@@ -291,10 +305,27 @@
                 document.querySelector(":root").style.setProperty('--game-row-number', rowCount);
                 this.$data.rowCount = rowCount;
                 this.setNewGame()
+            },
+            completeGame() {
+                this.$data.state.isRun = false
+                this.$data.state.endTime = Date.now()
+                // 开始准备上包
             }
         }
     })
     app.mount("#app")
+
+    // 生成随机字符串
+    function generateUniqueId() {
+        var result = '';
+        var characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+        var charactersLength = characters.length;
+        for (var i = 0; i < 32; i++) {
+            result += characters.charAt(Math.floor(Math.random() * charactersLength));
+        }
+        return result;
+    }
+
 </script>
 
 </html>
