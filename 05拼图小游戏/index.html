@@ -151,12 +151,52 @@
 </style>
 
 <script>
-    // const yptools_uniqueIdentification = 'yptools_uniqueIdentification'
-    // if (!localStorage.getItem(yptools_uniqueIdentification)) {
-    //     localStorage.setItem(yptools_uniqueIdentification, Math.random().toString(36).substring(2));
-    // }
+    const yptools_uniqueIdentification_key = 'yptools_uniqueIdentification_key'
+    var yptools_uniqueIdentification = localStorage.getItem(yptools_uniqueIdentification_key);
+    if (!yptools_uniqueIdentification) {
+        yptools_uniqueIdentification = generateUniqueId()
+        localStorage.setItem(yptools_uniqueIdentification_key, yptools_uniqueIdentification);
+    }
 
-    console.log(Math.random().toString(36).substring(2))
+    var isMobile = false;
+    var isAndroid = false;
+    var userAgent = navigator.userAgent;
+    var system = ""
+    if (userAgent.indexOf("Win") != -1) {
+        // 用户的操作系统是 Windows
+        isMobile = false;
+        isAndroid = false;
+        system = "Windows"
+    } else if (userAgent.indexOf("Mac") != -1) {
+        // 用户的操作系统是 Mac OS
+        isMobile = false;
+        isAndroid = false;
+        system = "Mac"
+        if (userAgent.indexOf("iPhone") != -1 || userAgent.indexOf("iPad") != -1) {
+            isMobile = true;
+            system = "iPhone"
+        }
+    } else if (userAgent.indexOf("iPhone") != -1 || userAgent.indexOf("iPad") != -1) {
+        // 用户的操作系统是 iOS
+        isMobile = true;
+        isAndroid = false;
+        system = "iPhone"
+    } else if (userAgent.indexOf("Android") != -1) {
+        // 用户的操作系统是 Android
+        isMobile = true;
+        isAndroid = true;
+        system = "Android"
+    } else {
+        // 未能识别用户的操作系统
+        isMobile = false;
+        isAndroid = false;
+        system = "Unknown"
+    }
+
+    // 数据层
+    console.log("用户唯一标识：" + yptools_uniqueIdentification);
+    console.log("用户操作设备：" + system);
+    console.log("用户操作系统：" + userAgent);
 
     const rootStyles = getComputedStyle(document.documentElement);
     const gameRowNumber = rootStyles.getPropertyValue('--game-row-number');
