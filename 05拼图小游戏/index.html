@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-    <title>Document</title>
+    <title>难不倒我</title>
     <script src="https://cdn.jsdelivr.net/npm/vue"></script>
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
     <link rel="stylesheet" href="../public.css">
@@ -13,6 +13,14 @@
 
 <body>
     <div id="app" class="container pr">
+        <div class="container-header pr">
+            <div class="tools-item tools-item-reset">
+                <p>排行榜</p>
+            </div>
+            <div class="tools-item tools-item-reset">
+                <p>排行榜</p>
+            </div>
+        </div>
         <div class="container-box pr">
             <div class="game-content pr">
                 <div :id="'card-cell' + index" class="card-cell pa" v-for="(item, index) in cards" :key="index"
@@ -58,7 +66,7 @@
 
     .container-box {
         border-radius: 15px;
-        margin-top: 50px;
+        margin-top: 0px;
         background-color: var(--game-background-color);
         padding: 20px;
         width: var(--game-width);
@@ -69,7 +77,7 @@
         -webkit-tap-highlight-color: transparent;
     }
 
-    .container-tools {
+    .container-tools,.container-header {
         border-radius: 15px;
         margin-top: 0px;
         background-color: var(--game-background-color);
@@ -80,6 +88,10 @@
         display: flex;
         flex-wrap: wrap;
         justify-content: center;
+    }
+
+    .container-header {
+        margin: 20px 0px;
     }
 
     .container-gameinfo {
