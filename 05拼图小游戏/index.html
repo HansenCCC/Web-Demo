@@ -6,19 +6,22 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
     <title>难不倒我</title>
+
+    <link href="https://cdn.staticfile.org/twitter-bootstrap/5.1.1/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.staticfile.org/twitter-bootstrap/5.1.1/js/bootstrap.bundle.min.js"></script>
+
     <script src="https://cdn.jsdelivr.net/npm/vue"></script>
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
+
     <link rel="stylesheet" href="../public.css">
+
 </head>
 
 <body>
     <div id="app" class="container pr">
-        <div class="container-header pr">
-            <div class="tools-item tools-item-reset">
-                <p>排行榜</p>
-            </div>
-            <div class="tools-item tools-item-reset">
-                <p>排行榜</p>
+        <div class="container-header pr" data-bs-toggle="offcanvas" data-bs-target="#container-ranking-list">
+            <div class="tools-item">
+                <h2>排行榜</h2>
             </div>
         </div>
         <div class="container-box pr">
@@ -44,10 +47,124 @@
                 <p>重新开始</p>
             </div>
         </div>
+        <!-- 排行榜弹框 -->
+        <div id="container-ranking-list" class="offcanvas offcanvas-body show">
+            <div class="ranking-list-box">
+                <div class="ranking-title">排行榜</div>
+                <div class="ranking-tag">
+                    <!-- color: red;font-weight: bold; -->
+                    <div :style="rankingIndex == 0 ? { color:'#007aff', fontWeight: 'bold' } : {}" @click="selectRanking(0)">时间排名</div>
+                    <div :style="rankingIndex == 1 ? { color:'#007aff', fontWeight: 'bold' } : {}" @click="selectRanking(1)">移动排名</div>
+                </div>
+                <div class="ranking-list">
+                    <div class="ranking-list-cell pr ranking-list-cell-header">
+                        <div class="ranking-list-cell-index" style="opacity: 0;"></div>
+                        <div class="ranking-list-cell-name">姓名</div>
+                        <div class="ranking-list-cell-timeandmove"> {{ rankingIndex == 0 ? "总耗时" : "总移动" }} </div>
+                    </div>
+                    <div :style=" index%2 == 0 ? {backgroundColor: '#efefef'} : {}" class="ranking-list-cell pr" v-for="(item, index) in rankingIndex == 0 ? rankingList.timeDataList : rankingList.moveDataList" :key="index">
+                        <div class="ranking-list-cell-index">{{index + 1}}</div>
+                        <div class="ranking-list-cell-name">{{item.name}}</div>
+                        <div class="ranking-list-cell-timeandmove">{{rankingIndex == 0 ? item.duration + "秒" : item.moveCount + "次"}}</div>
+                        <div class="ranking-list-cell-line pa"></div>
+                    </div>
+                </div>
+                <!-- <div class="my-ranking-data">
+                    <p style="font-size: 18px;">我的排名</p>
+                    <div class="ranking-list-cell pr">
+                        <div class="ranking-list-cell-index">{{1}}</div>
+                        <div class="ranking-list-cell-name">{{"程恒盛"}}</div>
+                        <div class="ranking-list-cell-timeandmove">{{rankingIndex == 0 ? "1" + "秒" : "1" + "次"}}</div>
+                    </div>
+                </div> -->
+            </div>
+        </div>
     </div>
 </body>
 
 <style scoped>
+    /* 排行榜布局 */
+    #container-ranking-list {
+        width: calc(100% - 50px);
+        height: 80%;
+        top: 10%;
+        border-radius: 20px;
+        display: flex;
+        text-align: center;
+    }
+
+    .ranking-list-box {
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+        height: 100%;
+    }
+
+    .ranking-title {
+        margin-top: 10px;
+        font-size: 25px;
+        font-weight: bold;
+    }
+
+    .ranking-tag {
+        display: flex;
+        justify-content: space-evenly;
+        font-size: 18px;
+        padding: 10px;
+        margin-top: 10px;
+    }
+
+    .ranking-list {
+        overflow: scroll;
+    }
+
+    .ranking-list::-webkit-scrollbar {
+        display: none;
+    }
+
+    .ranking-list-cell {
+        padding: 8px 10px;
+        display: flex;
+        align-items: center;
+    }
+
+    .ranking-list-cell-header {
+        opacity: 0.5;
+        height: 30px;
+    }
+
+    .ranking-list-cell .ranking-list-cell-index {
+        width: 30px;
+        height: 30px;
+        border-radius: 20px;
+        line-height: 30px;
+        font-size: 15px;
+        border: 1px solid gray;
+    }
+
+    .ranking-list-cell .ranking-list-cell-name {
+        margin-left: 10px;
+    }
+
+    .ranking-list-cell .ranking-list-cell-timeandmove {
+        flex-grow: 1;
+        text-align: right;
+    }
+
+    .ranking-list-cell .ranking-list-cell-line {
+        background-color: #efefef;
+        height: 1px;
+        left: 40px;
+        right: 0px;
+        bottom: 0px;
+    }
+
+    .my-ranking-data {
+        padding: 10px;
+        height: 70px;
+    }
+
+    /* 游戏布局 */
     body {
         width: 100vw;
         height: 100vh;
@@ -77,11 +194,12 @@
         -webkit-tap-highlight-color: transparent;
     }
 
-    .container-tools,.container-header {
+    .container-tools,
+    .container-header {
         border-radius: 15px;
         margin-top: 0px;
         background-color: var(--game-background-color);
-        padding: 10px 20px;
+        padding: 15px 20px;
         width: var(--game-width);
         border: 3px solid #efefef;
         box-shadow: 0px 0px 20px #efefef;
@@ -227,6 +345,11 @@
                 },
                 rowCount: kRowCount,// 一行几个
                 totalRows: kRowCount * kRowCount,// 共计多少
+                rankingList: {
+                    moveDataList: [],
+                    timeDataList: [],
+                },
+                rankingIndex: 0, // 0时间排名 1移动排名 默认为0
             }
         },
         mounted() {
@@ -351,6 +474,8 @@
                 this.checkCells(true);
                 this.$data.state.isRun = true
                 this.$data.state.startTime = Date.now()
+
+                this.requestRankingList()
             },
             setRowNumber(rowCount) {
                 // 设置一行展示几个cells
@@ -362,6 +487,22 @@
                 this.$data.state.isRun = false
                 this.$data.state.endTime = Date.now()
                 // 开始准备上包
+            },
+            requestRankingList() {
+                let url = "http://10.111.37.86:8081/game/ranking"
+                let self = this;
+                $.ajax({
+                    type: "GET",
+                    url: url,
+                    dataType: "json",
+                    success: function (response) {
+                        self.$data.rankingList.moveDataList = response.moveDataList;
+                        self.$data.rankingList.timeDataList = response.timeDataList;
+                    }
+                });
+            },
+            selectRanking(index) {
+                this.$data.rankingIndex = index;
             }
         }
     })
