@@ -44,17 +44,19 @@
         </div>
         <div class="container-tools pr" @click="setNewGame()">
             <div class="tools-item tools-item-reset">
-                <p>重新开始</p>
+                <p> {{ this.$data.isInitial ? "开始游戏" : "重新开始" }} </p>
             </div>
         </div>
         <!-- 排行榜弹框 -->
-        <div id="container-ranking-list" class="offcanvas offcanvas-body show">
+        <div id="container-ranking-list" class="offcanvas offcanvas-body">
             <div class="ranking-list-box">
                 <div class="ranking-title">排行榜</div>
                 <div class="ranking-tag">
                     <!-- color: red;font-weight: bold; -->
-                    <div :style="rankingIndex == 0 ? { color:'#007aff', fontWeight: 'bold' } : {}" @click="selectRanking(0)">时间排名</div>
-                    <div :style="rankingIndex == 1 ? { color:'#007aff', fontWeight: 'bold' } : {}" @click="selectRanking(1)">移动排名</div>
+                    <div :style="rankingIndex == 0 ? { color:'#007aff', fontWeight: 'bold' } : {}"
+                        @click="selectRanking(0)">时间排名</div>
+                    <div :style="rankingIndex == 1 ? { color:'#007aff', fontWeight: 'bold' } : {}"
+                        @click="selectRanking(1)">移动排名</div>
                 </div>
                 <div class="ranking-list">
                     <div class="ranking-list-cell pr ranking-list-cell-header">
@@ -62,10 +64,13 @@
                         <div class="ranking-list-cell-name">姓名</div>
                         <div class="ranking-list-cell-timeandmove"> {{ rankingIndex == 0 ? "总耗时" : "总移动" }} </div>
                     </div>
-                    <div :style=" index%2 == 0 ? {backgroundColor: '#efefef'} : {}" class="ranking-list-cell pr" v-for="(item, index) in rankingIndex == 0 ? rankingList.timeDataList : rankingList.moveDataList" :key="index">
+                    <div :style=" index%2 == 0 ? {backgroundColor: '#efefef'} : {}" class="ranking-list-cell pr"
+                        v-for="(item, index) in rankingIndex == 0 ? rankingList.timeDataList : rankingList.moveDataList"
+                        :key="index">
                         <div class="ranking-list-cell-index">{{index + 1}}</div>
                         <div class="ranking-list-cell-name">{{item.name}}</div>
-                        <div class="ranking-list-cell-timeandmove">{{rankingIndex == 0 ? item.duration + "秒" : item.moveCount + "次"}}</div>
+                        <div class="ranking-list-cell-timeandmove">{{rankingIndex == 0 ? item.duration + "秒" :
+                            item.moveCount + "次"}}</div>
                         <div class="ranking-list-cell-line pa"></div>
                     </div>
                 </div>
@@ -79,10 +84,27 @@
                 </div> -->
             </div>
         </div>
+        <!-- 个人信息 -->
+        <div class="container-user-info">
+            <p> 游戏昵称： {{ userInfo.yptools_username }}</p>
+            <div> 你游戏总次数： {{ userInfo.yptools_playcount }}</div>
+            <div> 你最佳时间： {{ userInfo.yptools_besttime ? userInfo.yptools_besttime : "暂无记录" }}</div>
+            <div> 你最佳移动： {{ userInfo.yptools_bestmove ? userInfo.yptools_bestmove : "暂无记录" }}</div>
+        </div>
     </div>
 </body>
 
 <style scoped>
+    /* 个人信息 */
+    .container-user-info {
+        margin-top: 20px;
+    }
+
+    .container-user-info div {
+
+        font-size: 15px;
+    }
+
     /* 排行榜布局 */
     #container-ranking-list {
         width: calc(100% - 50px);
@@ -287,6 +309,21 @@
         yptools_uniqueIdentification = generateUniqueId()
         localStorage.setItem(yptools_uniqueIdentification_key, yptools_uniqueIdentification);
     }
+    const yptools_username_key = 'yptools_username_key'
+    var yptools_username = localStorage.getItem(yptools_username_key)
+    if (!yptools_username) {
+        yptools_username = "用户" + new Date().valueOf()
+        console.log(yptools_username);
+        localStorage.setItem(yptools_username_key, yptools_username);
+    }
+
+    // 游戏信息
+    const yptools_playcount_key = 'yptools_playcount_key'
+    const yptools_besttime_key = 'yptools_besttime_key'
+    const yptools_bestmove_key = 'yptools_bestmove_key'
+    var yptools_playcount = parseInt(localStorage.getItem(yptools_playcount_key));
+    var yptools_besttime = parseFloat(localStorage.getItem(yptools_besttime_key));
+    var yptools_bestmove = parseInt(localStorage.getItem(yptools_bestmove_key));
 
     var isMobile = false;
     var isAndroid = false;
@@ -350,6 +387,30 @@
                     timeDataList: [],
                 },
                 rankingIndex: 0, // 0时间排名 1移动排名 默认为0
+                isInitial: true, // 最初阶段
+                userInfo:{
+                    yptools_playcount: yptools_playcount,
+                    yptools_besttime: yptools_besttime,
+                    yptools_bestmove: yptools_bestmove,
+                    yptools_username: yptools_username,
+                }
+            }
+        },
+        watch: {
+            'userInfo.yptools_playcount' : {
+                handler(newValue, oldValue) {
+                    localStorage.setItem(yptools_playcount_key, newValue);    
+                }    
+            },
+            'userInfo.yptools_besttime' : {
+                handler(newValue, oldValue) {
+                    localStorage.setItem(yptools_besttime_key, newValue);    
+                }    
+            },
+            'userInfo.yptools_bestmove' : {
+                handler(newValue, oldValue) {
+                    localStorage.setItem(yptools_bestmove_key, newValue);    
+                }    
             }
         },
         mounted() {
@@ -368,6 +429,13 @@
                     this.$data.state.completionTime = parseInt((this.$data.state.endTime - this.$data.state.startTime) / 1000);
                 }
             }, 200);
+
+            // 获取游戏排行榜
+            this.requestRankingList()
+            // 初始化赋值
+            this.$data.userInfo.yptools_playcount = parseInt(yptools_playcount)
+            this.$data.userInfo.yptools_besttime = yptools_besttime
+            this.$data.userInfo.yptools_bestmove = parseInt(yptools_bestmove)
         },
         methods: {
             setupCards() {
@@ -380,7 +448,6 @@
                 this.updateCellFrame()
                 this.$nextTick(function () {
                     this.updateCellFrame()
-                    this.setNewGame()
                 })
             },
             updateCellFrame() {
@@ -391,11 +458,8 @@
                     let g = Math.random() * 255;
                     let b = Math.random() * 255;
                     var width = 1 / kRowCount * 100;
-                    // element.style.width = 
-                    // element.style.height = 
                     element.style.left = width * parseInt((index % kRowCount)) + "%"
                     element.style.top = width * parseInt((index / kRowCount)) + "%"
-                    // element.style.backgroundColor = "rgb(" + r + "," + g + "," + b + ")"
                     element.style.oldTop = element.style.top
                     element.style.oldLeft = element.style.left
                 }
@@ -403,6 +467,9 @@
             },
             // 选择 | 或者移动cell
             cellSelctedAction(cell, index) {
+                // if (!this.$data.state.isRun) {
+                //     return
+                // }
                 var specialCell = document.getElementById("card-cell" + (this.$data.totalRows - 1))
                 if (cell.target != specialCell) {
                     var cellLeft = cell.target.style.left;
@@ -426,8 +493,8 @@
                         cell.target.style.top = specialCell.style.top;
                         specialCell.style.left = cellLeft;
                         specialCell.style.top = cellTop;
-                        this.checkCells(false)
                         this.$data.state.moveCount++
+                        this.checkCells(false)
                     }
                 }
             },
@@ -474,8 +541,9 @@
                 this.checkCells(true);
                 this.$data.state.isRun = true
                 this.$data.state.startTime = Date.now()
-
-                this.requestRankingList()
+                this.$data.state.moveCount = 0
+                this.$data.isInitial = false
+                this.$data.userInfo.yptools_playcount = parseInt(this.$data.userInfo.yptools_playcount) + 1;
             },
             setRowNumber(rowCount) {
                 // 设置一行展示几个cells
@@ -486,7 +554,11 @@
             completeGame() {
                 this.$data.state.isRun = false
                 this.$data.state.endTime = Date.now()
-                // 开始准备上包
+                // 上传游戏数据
+                console.log("游戏结束了");
+                console.log(this.$data.state.startTime);
+                console.log(this.$data.state.endTime);
+                console.log(this.$data.state.moveCount);
             },
             requestRankingList() {
                 let url = "http://10.111.37.86:8081/game/ranking"
