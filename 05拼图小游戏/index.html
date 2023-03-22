@@ -6,15 +6,18 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
     <title>难不倒我</title>
-
-    <link href="https://cdn.staticfile.org/twitter-bootstrap/5.1.1/css/bootstrap.min.css" rel="stylesheet">
-    <script src="https://cdn.staticfile.org/twitter-bootstrap/5.1.1/js/bootstrap.bundle.min.js"></script>
-
-    <script src="https://cdn.jsdelivr.net/npm/vue"></script>
-    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
-
+    <!-- Bootstrap  -->
+    <link href="./other/bootstrap.min.css" rel="stylesheet">
+    <script src="./other/bootstrap.bundle.min.js"></script>
+    <!-- Vue -->
+    <script src="./other/vue.js"></script>
+    <!-- JQuery -->
+    <script type="text/javascript" src="./other/jquery.min.js"></script>
+    <!-- Public -->
     <link rel="stylesheet" href="../public.css">
-
+    <!-- Game -->
+    <link rel="stylesheet" href="./css/game.css">
+    <script type="text/javascript" src="./js/game.js"></script>
 </head>
 
 <body>
@@ -86,285 +89,15 @@
         </div>
         <!-- 个人信息 -->
         <div class="container-user-info">
-            <p> 游戏昵称： {{ userInfo.yptools_username }}</p>
-            <div> 你游戏总次数： {{ userInfo.yptools_playcount }}</div>
-            <div> 你最佳时间： {{ userInfo.yptools_besttime ? userInfo.yptools_besttime : "暂无记录" }}</div>
-            <div> 你最佳移动： {{ userInfo.yptools_bestmove ? userInfo.yptools_bestmove : "暂无记录" }}</div>
+            <p> {{ userInfo.yptools_username }}</p>
+            <div> 你的游戏总次数： {{ userInfo.yptools_playcount }}</div>
+            <div> 你的最佳时间： {{ userInfo.yptools_besttime ? userInfo.yptools_besttime : "暂无记录" }}</div>
+            <div> 你的最佳移动： {{ userInfo.yptools_bestmove ? userInfo.yptools_bestmove : "暂无记录" }}</div>
         </div>
     </div>
 </body>
 
-<style scoped>
-    /* 个人信息 */
-    .container-user-info {
-        margin-top: 20px;
-    }
-
-    .container-user-info div {
-
-        font-size: 15px;
-    }
-
-    /* 排行榜布局 */
-    #container-ranking-list {
-        width: calc(100% - 50px);
-        height: 80%;
-        top: 10%;
-        border-radius: 20px;
-        display: flex;
-        text-align: center;
-    }
-
-    .ranking-list-box {
-        display: flex;
-        flex-direction: column;
-        width: 100%;
-        height: 100%;
-    }
-
-    .ranking-title {
-        margin-top: 10px;
-        font-size: 25px;
-        font-weight: bold;
-    }
-
-    .ranking-tag {
-        display: flex;
-        justify-content: space-evenly;
-        font-size: 18px;
-        padding: 10px;
-        margin-top: 10px;
-    }
-
-    .ranking-list {
-        overflow: scroll;
-    }
-
-    .ranking-list::-webkit-scrollbar {
-        display: none;
-    }
-
-    .ranking-list-cell {
-        padding: 8px 10px;
-        display: flex;
-        align-items: center;
-    }
-
-    .ranking-list-cell-header {
-        opacity: 0.5;
-        height: 30px;
-    }
-
-    .ranking-list-cell .ranking-list-cell-index {
-        width: 30px;
-        height: 30px;
-        border-radius: 20px;
-        line-height: 30px;
-        font-size: 15px;
-        border: 1px solid gray;
-    }
-
-    .ranking-list-cell .ranking-list-cell-name {
-        margin-left: 10px;
-    }
-
-    .ranking-list-cell .ranking-list-cell-timeandmove {
-        flex-grow: 1;
-        text-align: right;
-    }
-
-    .ranking-list-cell .ranking-list-cell-line {
-        background-color: #efefef;
-        height: 1px;
-        left: 40px;
-        right: 0px;
-        bottom: 0px;
-    }
-
-    .my-ranking-data {
-        padding: 10px;
-        height: 70px;
-    }
-
-    /* 游戏布局 */
-    body {
-        width: 100vw;
-        height: 100vh;
-        background-color: var(--game-background-color);
-    }
-
-    .container {
-        display: flex;
-        align-items: center;
-        position: relative;
-        width: 100%;
-        height: 100%;
-        flex-direction: column;
-        background-color: var(--game-background-color);
-    }
-
-    .container-box {
-        border-radius: 15px;
-        margin-top: 0px;
-        background-color: var(--game-background-color);
-        padding: 20px;
-        width: var(--game-width);
-        height: var(--game-width);
-        border: 3px solid #efefef;
-        box-shadow: 0px 0px 20px #efefef;
-        outline: none;
-        -webkit-tap-highlight-color: transparent;
-    }
-
-    .container-tools,
-    .container-header {
-        border-radius: 15px;
-        margin-top: 0px;
-        background-color: var(--game-background-color);
-        padding: 15px 20px;
-        width: var(--game-width);
-        border: 3px solid #efefef;
-        box-shadow: 0px 0px 20px #efefef;
-        display: flex;
-        flex-wrap: wrap;
-        justify-content: center;
-    }
-
-    .container-header {
-        margin: 20px 0px;
-    }
-
-    .container-gameinfo {
-        margin-top: 20px;
-        width: var(--game-width);
-        height: 40px;
-    }
-
-    .game-content {
-        width: 100%;
-        height: 100%;
-        background-color: var(--game-background-color);
-    }
-
-    .card-cell {
-        width: calc(100% / var(--game-row-number));
-        height: calc(100% / var(--game-row-number));
-        text-align: center;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        transition: all 0.2s;
-        -webkit-user-select: none;
-        user-select: none;
-    }
-
-    .card-cell-content {
-        width: 80%;
-        height: 80%;
-        pointer-events: none;
-        text-align: center;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        border-radius: 5px;
-        background-color: var(--game-cell-color);
-        box-shadow: 3px 3px #efefef;
-    }
-
-    .card-cell-number {
-        font-size: 30px;
-        background-color: transparent;
-    }
-
-    .tools-item {
-        font-size: 20px;
-        -webkit-user-select: none;
-        user-select: none;
-    }
-
-    .tools-item-time {
-        left: 0%;
-    }
-
-    .tools-item-moveCount {
-        right: 0%;
-    }
-
-    :root {
-        --game-background-color: #ffffff;
-        --game-selected-color: #007aff;
-        --game-unselect-color: #565656;
-        --game-important-color: #ff0000;
-        --game-box-color: #eeeeee;
-        --game-cell-color: #efefef55;
-        --game-width: 280px;
-        --game-row-number: 3;
-    }
-</style>
-
 <script>
-    const yptools_uniqueIdentification_key = 'yptools_uniqueIdentification_key'
-    var yptools_uniqueIdentification = localStorage.getItem(yptools_uniqueIdentification_key);
-    if (!yptools_uniqueIdentification) {
-        yptools_uniqueIdentification = generateUniqueId()
-        localStorage.setItem(yptools_uniqueIdentification_key, yptools_uniqueIdentification);
-    }
-    const yptools_username_key = 'yptools_username_key'
-    var yptools_username = localStorage.getItem(yptools_username_key)
-    if (!yptools_username) {
-        yptools_username = "用户" + new Date().valueOf()
-        console.log(yptools_username);
-        localStorage.setItem(yptools_username_key, yptools_username);
-    }
-
-    // 游戏信息
-    const yptools_playcount_key = 'yptools_playcount_key'
-    const yptools_besttime_key = 'yptools_besttime_key'
-    const yptools_bestmove_key = 'yptools_bestmove_key'
-    var yptools_playcount = parseInt(localStorage.getItem(yptools_playcount_key));
-    var yptools_besttime = parseFloat(localStorage.getItem(yptools_besttime_key));
-    var yptools_bestmove = parseInt(localStorage.getItem(yptools_bestmove_key));
-
-    var isMobile = false;
-    var isAndroid = false;
-    var userAgent = navigator.userAgent;
-    var system = ""
-    if (userAgent.indexOf("Win") != -1) {
-        // 用户的操作系统是 Windows
-        isMobile = false;
-        isAndroid = false;
-        system = "Windows"
-    } else if (userAgent.indexOf("Mac") != -1) {
-        // 用户的操作系统是 Mac OS
-        isMobile = false;
-        isAndroid = false;
-        system = "Mac"
-        if (userAgent.indexOf("iPhone") != -1 || userAgent.indexOf("iPad") != -1) {
-            isMobile = true;
-            system = "iPhone"
-        }
-    } else if (userAgent.indexOf("iPhone") != -1 || userAgent.indexOf("iPad") != -1) {
-        // 用户的操作系统是 iOS
-        isMobile = true;
-        isAndroid = false;
-        system = "iPhone"
-    } else if (userAgent.indexOf("Android") != -1) {
-        // 用户的操作系统是 Android
-        isMobile = true;
-        isAndroid = true;
-        system = "Android"
-    } else {
-        // 未能识别用户的操作系统
-        isMobile = false;
-        isAndroid = false;
-        system = "Unknown"
-    }
-
-    // 数据层
-    console.log("用户唯一标识：" + yptools_uniqueIdentification);
-    console.log("用户操作设备：" + system);
-    console.log("用户操作系统：" + userAgent);
-
     const rootStyles = getComputedStyle(document.documentElement);
     const gameRowNumber = rootStyles.getPropertyValue('--game-row-number');
     const kRowCount = parseInt(gameRowNumber);
@@ -388,7 +121,7 @@
                 },
                 rankingIndex: 0, // 0时间排名 1移动排名 默认为0
                 isInitial: true, // 最初阶段
-                userInfo:{
+                userInfo: {
                     yptools_playcount: yptools_playcount,
                     yptools_besttime: yptools_besttime,
                     yptools_bestmove: yptools_bestmove,
@@ -397,20 +130,20 @@
             }
         },
         watch: {
-            'userInfo.yptools_playcount' : {
+            'userInfo.yptools_playcount': {
                 handler(newValue, oldValue) {
-                    localStorage.setItem(yptools_playcount_key, newValue);    
-                }    
+                    localStorage.setItem(yptools_playcount_key, newValue);
+                }
             },
-            'userInfo.yptools_besttime' : {
+            'userInfo.yptools_besttime': {
                 handler(newValue, oldValue) {
-                    localStorage.setItem(yptools_besttime_key, newValue);    
-                }    
+                    localStorage.setItem(yptools_besttime_key, newValue);
+                }
             },
-            'userInfo.yptools_bestmove' : {
+            'userInfo.yptools_bestmove': {
                 handler(newValue, oldValue) {
-                    localStorage.setItem(yptools_bestmove_key, newValue);    
-                }    
+                    localStorage.setItem(yptools_bestmove_key, newValue);
+                }
             }
         },
         mounted() {
@@ -555,13 +288,44 @@
                 this.$data.state.isRun = false
                 this.$data.state.endTime = Date.now()
                 // 上传游戏数据
-                console.log("游戏结束了");
-                console.log(this.$data.state.startTime);
-                console.log(this.$data.state.endTime);
-                console.log(this.$data.state.moveCount);
+                var data = {
+                    "name": this.$data.userInfo.yptools_username,
+                    "moveCount": this.$data.state.moveCount,
+                    "createdTime": formatDate(new Date(this.$data.state.startTime),"yyyy-MM-dd HH:mm:ss.SSS"),// this.$data.state.startTime
+                    "overTime": formatDate(new Date(this.$data.state.endTime),"yyyy-MM-dd HH:mm:ss.SSS"),
+                    "udid": yptools_uniqueIdentification,
+                }
+                let url = baseURL + "/game/adddata"
+                let self = this;
+                $.ajax({
+                    method: "POST",
+                    contentType: 'application/json',
+                    url: url,
+                    data: JSON.stringify(data),
+                    success: function (response) {
+                        // TODO
+                    }
+                });
+                // 最佳数据
+                var duration =  (this.$data.state.endTime - this.$data.state.startTime) / 1000
+                if (!isNaN(this.$data.userInfo.yptools_besttime)) {
+                    if (this.$data.userInfo.yptools_besttime > duration) {
+                        this.$data.userInfo.yptools_besttime = duration;
+                    }
+                } else {
+                    this.$data.userInfo.yptools_besttime = duration;
+                }
+                var move = this.$data.state.moveCount
+                if (!isNaN(this.$data.userInfo.yptools_bestmove)) {
+                    if (this.$data.userInfo.yptools_bestmove > move) {
+                        this.$data.userInfo.yptools_bestmove = move;
+                    }
+                } else {
+                    this.$data.userInfo.yptools_bestmove = move;
+                }
             },
             requestRankingList() {
-                let url = "http://10.111.37.86:8081/game/ranking"
+                let url = baseURL + "/game/ranking"
                 let self = this;
                 $.ajax({
                     type: "GET",
@@ -579,17 +343,6 @@
         }
     })
     app.mount("#app")
-
-    // 生成随机字符串
-    function generateUniqueId() {
-        var result = '';
-        var characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-        var charactersLength = characters.length;
-        for (var i = 0; i < 32; i++) {
-            result += characters.charAt(Math.floor(Math.random() * charactersLength));
-        }
-        return result;
-    }
 
 </script>
 
