@@ -169,8 +169,28 @@
             this.$data.userInfo.yptools_playcount = parseInt(yptools_playcount)
             this.$data.userInfo.yptools_besttime = yptools_besttime
             this.$data.userInfo.yptools_bestmove = parseInt(yptools_bestmove)
+            // 初始化
+            this.initOrNewGame();
         },
         methods: {
+            initOrNewGame() {
+                // 用户初始化 或者 新的游戏开始
+                var data = {
+                    "name": this.$data.userInfo.yptools_username,
+                    "udid": yptools_uniqueIdentification,
+                }
+                let url = baseURL + "/game/init"
+                let self = this;
+                $.ajax({
+                    method: "POST",
+                    contentType: 'application/json',
+                    url: url,
+                    data: JSON.stringify(data),
+                    success: function (response) {
+                        // TODO
+                    }
+                });
+            },
             setupCards() {
                 this.$data.cards.splice(0, this.$data.cards.length)
                 const allElements = this.$data.totalRows;
@@ -200,9 +220,9 @@
             },
             // 选择 | 或者移动cell
             cellSelctedAction(cell, index) {
-                // if (!this.$data.state.isRun) {
-                //     return
-                // }
+                if (!this.$data.state.isRun) {
+                    return
+                }
                 var specialCell = document.getElementById("card-cell" + (this.$data.totalRows - 1))
                 if (cell.target != specialCell) {
                     var cellLeft = cell.target.style.left;
@@ -277,6 +297,8 @@
                 this.$data.state.moveCount = 0
                 this.$data.isInitial = false
                 this.$data.userInfo.yptools_playcount = parseInt(this.$data.userInfo.yptools_playcount) + 1;
+                // 埋点
+                this.initOrNewGame();
             },
             setRowNumber(rowCount) {
                 // 设置一行展示几个cells
