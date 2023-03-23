@@ -50,6 +50,29 @@
                 <p> {{ this.$data.isInitial ? "开始游戏" : "重新开始" }} </p>
             </div>
         </div>
+        <!-- 弹框修改昵称 -->
+        <div class="modal fade" id="change-username" tabindex="-1" aria-labelledby="exampleModalLabel"
+            aria-hidden="true">
+            <div class="modal-dialog change-username-bootstrap">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h1 class="modal-title fs-5" id="exampleModalLabel">修改昵称</h1>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="input-group flex-nowrap">
+                            <input  ref="usernameInput" type="text" class="form-control" placeholder="用户昵称" aria-label="Username"
+                                aria-describedby="addon-wrapping" maxlength="10" :value="userInfo.yptools_username">
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button ref="closeUserButton" type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                        <button type="button" class="btn btn-primary" @click="changeUserName()">修改</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!-- 排行榜弹框 -->
         <div id="container-ranking-list" class="offcanvas offcanvas-body">
             <div class="ranking-list-box">
@@ -89,7 +112,7 @@
         </div>
         <!-- 个人信息 -->
         <div class="container-user-info">
-            <p> {{ userInfo.yptools_username }}</p>
+            <p data-bs-toggle="modal" data-bs-target="#change-username"> {{ userInfo.yptools_username }}</p>
             <div> 你的游戏总次数： {{ userInfo.yptools_playcount }}</div>
             <div> 你的最佳时间： {{ userInfo.yptools_besttime ? userInfo.yptools_besttime : "暂无记录" }}</div>
             <div> 你的最佳移动： {{ userInfo.yptools_bestmove ? userInfo.yptools_bestmove : "暂无记录" }}</div>
@@ -144,7 +167,12 @@
                 handler(newValue, oldValue) {
                     localStorage.setItem(yptools_bestmove_key, newValue);
                 }
-            }
+            },
+            'userInfo.yptools_username': {
+                handler(newValue, oldValue) {
+                    localStorage.setItem(yptools_username_key, newValue);
+                }
+            },
         },
         mounted() {
             this.setupCards()
@@ -313,8 +341,8 @@
                 var data = {
                     "name": this.$data.userInfo.yptools_username,
                     "moveCount": this.$data.state.moveCount,
-                    "createdTime": formatDate(new Date(this.$data.state.startTime),"yyyy-MM-dd HH:mm:ss.SSS"),// this.$data.state.startTime
-                    "overTime": formatDate(new Date(this.$data.state.endTime),"yyyy-MM-dd HH:mm:ss.SSS"),
+                    "createdTime": formatDate(new Date(this.$data.state.startTime), "yyyy-MM-dd HH:mm:ss.SSS"),// this.$data.state.startTime
+                    "overTime": formatDate(new Date(this.$data.state.endTime), "yyyy-MM-dd HH:mm:ss.SSS"),
                     "udid": yptools_uniqueIdentification,
                 }
                 let url = baseURL + "/game/adddata"
@@ -329,7 +357,7 @@
                     }
                 });
                 // 最佳数据
-                var duration =  (this.$data.state.endTime - this.$data.state.startTime) / 1000
+                var duration = (this.$data.state.endTime - this.$data.state.startTime) / 1000
                 if (!isNaN(this.$data.userInfo.yptools_besttime)) {
                     if (this.$data.userInfo.yptools_besttime > duration) {
                         this.$data.userInfo.yptools_besttime = duration;
@@ -361,6 +389,12 @@
             },
             selectRanking(index) {
                 this.$data.rankingIndex = index;
+            },
+            changeUserName() {
+                this.$data.userInfo.yptools_username = this.$refs.usernameInput.value
+                this.$refs.closeUserButton.click();
+                // 开始修改功能
+                this.initOrNewGame();
             }
         }
     })
