@@ -61,12 +61,14 @@
                     </div>
                     <div class="modal-body">
                         <div class="input-group flex-nowrap">
-                            <input  ref="usernameInput" type="text" class="form-control" placeholder="用户昵称" aria-label="Username"
-                                aria-describedby="addon-wrapping" maxlength="10" :value="userInfo.yptools_username">
+                            <input ref="usernameInput" type="text" class="form-control" placeholder="用户昵称"
+                                aria-label="Username" aria-describedby="addon-wrapping" maxlength="10"
+                                :value="userInfo.yptools_username">
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button ref="closeUserButton" type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                        <button ref="closeUserButton" type="button" class="btn btn-secondary"
+                            data-bs-dismiss="modal">取消</button>
                         <button type="button" class="btn btn-primary" @click="changeUserName()">修改</button>
                     </div>
                 </div>
@@ -117,6 +119,13 @@
             <div> 你的最佳时间： {{ userInfo.yptools_besttime ? userInfo.yptools_besttime : "暂无记录" }}</div>
             <div> 你的最佳移动： {{ userInfo.yptools_bestmove ? userInfo.yptools_bestmove : "暂无记录" }}</div>
         </div>
+        <!-- 网站信息 -->
+        <footer class="d-flex flex-wrap justify-content-between align-items-center py-3 my-4 border-top">
+            <div class="d-flex align-items-center">
+                <span class="mb-3 mb-md-0 text-muted">ICP备案/许可证号
+                    赣ICP备2023002487号-1</span>
+            </div>
+        </footer>
     </div>
 </body>
 
