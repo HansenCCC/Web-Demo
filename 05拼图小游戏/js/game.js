@@ -59,7 +59,7 @@ console.log("用户游戏昵称：" + yptools_username);
 //         "uuid": yptools_uniqueIdentification
 //     }
 // });
-const baseURL = "http://10.111.37.86:8081"
+const baseURL = "https://121.43.188.78:8081"
 
 
 // 游戏信息
